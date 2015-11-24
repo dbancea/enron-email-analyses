@@ -1,13 +1,9 @@
 
-library(dplyr);
-library(knitr);
-library(NLP);
-library(tm);
-library(tau);
-library(slam);
-library(RColorBrewer);
-library(wordcloud);
-library(SnowballC);
+# extract the e-mail content from all the emails sent by an employee 
+# and save them in file. The subject of the e-mail is inlcuded also in addition to the e-mail body
+# if the e-mail is a reply e-mail, the reply part of the e-mail is ignored
+# some additional cleanup is done, the rows whih have next characters are not included:
+#   @, forwarded, from, subject, cc:, ---
 
 Sys.time();
 

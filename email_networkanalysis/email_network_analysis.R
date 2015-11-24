@@ -15,8 +15,12 @@ Sys.time();
 
 base_dir <- "D:\\cursuri\\CKME136_CapstoneProject\\enron_dataset\\maildir";
 setwd(base_dir);
-email_name_list <- list.dirs(full.names=FALSE, recursive=FALSE);
 
+# map the e-mail address to user name. Some users/employee have multiple addresses
+# or the administrative office send e-mails in their name
+# the maping is storred in email_map vector
+
+email_name_list <- list.dirs(full.names=FALSE, recursive=FALSE);
 email_map <- vector();
 
 for (d in email_name_list) {
@@ -44,6 +48,11 @@ for (d in email_name_list) {
 Sys.time();
 
 
+# store all the e-mails traffice: senders to receivers (To, CC and Bcc) in email_stats matrix
+# the rows represent the senders and teh columns represent the receivers
+# some employee included their e-mails address to the receivers also
+# only the send directories are used, but some employees have three send directories: _sent_mail, sent, sent_items
+# all three of them are scanned if exist
 email_stats <- matrix(0, length(email_name_list), length(email_name_list));
 colnames(email_stats) <- c(email_name_list);
 rownames(email_stats) <- c(email_name_list);
@@ -103,15 +112,15 @@ for (d in email_name_list) {
 # use igraph to display the emails network
 ig <- graph.adjacency(email_stats, mode="directed", weighted=TRUE);
 
-#raw plot
+#raw plot, no transformation of the original data
 ig <- graph.adjacency(email_stats, mode="directed", weighted=TRUE)
 plot(ig);
 
-# delete loops
+# delete loops, senders which included their e-mail address to receivers field(s) also
 g <- simplify(ig);
 plot(g);
 
-# plot for large network
+# plot for large network, different type of plot/display
 # http://michael.hahsler.net/SMU/LearnROnYourOwn/code/igraph.html
 layout <- layout.fruchterman.reingold(g)
 plot(g, layout=layout, vertex.size=2, vertex.label=NA, edge.arrow.size=.2)
@@ -129,7 +138,7 @@ wc <- walktrap.community(g);
 plot(wc, g);
 
 
-# extract main group and display the most important people in the group
+# extract main group/community and display the most important people in the group
 # link: http://orbifold.net/R/iGraph/
 V(g)$label.cex = .15;
 x <- which.max(sizes(wc));
@@ -137,9 +146,10 @@ largestGroup = induced.subgraph(g, which(membership(wc) == x));
 V(largestGroup)$label.cex = 0.5;
 plot(largestGroup, vertex.size=betweenness(largestGroup)/17);
 
-
+# display all the comunities witheir size
 sizes(wc);
 
+# plot for different communities
 subgroup <- 1;
 grp = induced.subgraph(g, which(membership(wc) == subgroup));
 V(grp)$label.cex = 1;
