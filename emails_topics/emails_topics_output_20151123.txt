@@ -1,0 +1,125 @@
+Loading required package: topicmodels
+> source('D:/cursuri/CKME136_CapstoneProject/final/emails_topics/email_body_topics.R', echo=TRUE)
+
+> library(dplyr);
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+> library(knitr);
+
+> library(NLP);
+
+> library(tm);
+
+> library(tau);
+
+> library(slam);
+
+> library(RColorBrewer);
+
+> library(wordcloud);
+
+> library(SnowballC);
+
+> library(topicmodels);
+
+> # Sys.time function is used to capture the execution time for each part of the code
+> 
+> # create the corpus from the files which have the e-mail co .... [TRUNCATED] 
+[1] "2015-11-23 20:05:17 EST"
+
+> test_dir <- "D:\\cursuri\\CKME136_CapstoneProject\\enron_dataset\\tmp";
+
+> enron <- Corpus(DirSource(test_dir));
+
+> # documents cleanup with tm_map function
+> Sys.time();
+[1] "2015-11-23 20:05:25 EST"
+
+> enron <- tm_map(enron, content_transformer(tolower));
+
+> Sys.time();
+[1] "2015-11-23 20:05:27 EST"
+
+> enron <- tm_map(enron, removeNumbers);
+
+> Sys.time();
+[1] "2015-11-23 20:05:30 EST"
+
+> enron <- tm_map(enron, stripWhitespace);
+
+> Sys.time();
+[1] "2015-11-23 20:05:34 EST"
+
+> enron <- tm_map(enron, removeWords, stopwords("english"));
+
+> Sys.time();
+[1] "2015-11-23 20:05:48 EST"
+
+> enron <- tm_map(enron, stemDocument, language = "english");
+
+> # exclude some specific words which are in the exclude_words_list.txt from corpus
+> # the words excluded don't provide too much information related  .... [TRUNCATED] 
+[1] "2015-11-23 20:07:20 EST"
+
+> exclude_words  <- readLines("D:\\cursuri\\CKME136_CapstoneProject\\final\\emails_topics\\exclude_words_list.txt");
+
+> enron    <- tm_map(enron, removeWords, exclude_words);
+
+> # create document term matrix
+> Sys.time();
+[1] "2015-11-23 20:07:26 EST"
+
+> dtm <- DocumentTermMatrix(enron);
+
+> Sys.time();
+[1] "2015-11-23 20:13:18 EST"
+
+> # sum all columns since LDA return an error that there are empty rows
+> dtm_c <- rollup(dtm, 1, FUN = sum);
+
+> Sys.time();
+[1] "2015-11-23 20:13:18 EST"
+
+> # the dtm_c lost the weighthing information and LDA failed
+> # to added back dtm_c is trasformed to matrix, simple triplet matrix and DocumentTermMa .... [TRUNCATED] 
+
+> s <- as.simple_triplet_matrix(m);
+
+> dtm_colsum <- as.DocumentTermMatrix(s, weighting = weightTf);
+
+> # find the main 4 topics
+> Sys.time();
+[1] "2015-11-23 20:13:18 EST"
+
+> lda4 <- LDA(dtm_colsum, k = 4);
+
+> # display the first 10 words from the main 4 topics
+> Sys.time();
+[1] "2015-11-23 20:13:23 EST"
+
+> terms(lda4,10);
+      Topic 1   Topic 2   Topic 3    Topic 4    
+ [1,] "enron"   "work"    "contract" "enron"    
+ [2,] "time"    "make"    "enron"    "deal"     
+ [3,] "work"    "group"   "make"     "market"   
+ [4,] "inform"  "manag"   "power"    "energi"   
+ [5,] "schedul" "compani" "energi"   "trade"    
+ [6,] "busi"    "discuss" "gas"      "take"     
+ [7,] "price"   "trade"   "deal"     "interest" 
+ [8,] "deal"    "north"   "price"    "price"    
+ [9,] "gas"     "talk"    "servic"   "agreement"
+[10,] "provid"  "gas"     "thanks,"  "provid"   
+
+> Sys.time();
+[1] "2015-11-23 20:13:23 EST"
+> 
